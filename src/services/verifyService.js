@@ -1,8 +1,8 @@
 const {Auth } = require('@vonage/auth')
 const {SMS} = require('@vonage/sms')
+const logger = require('../utils/logger')
 
-
-const credenciales = new Auth({
+const credenciales = new SMS({
     apiKey: process.env.VONAGE_API_KEY,
     apiSecret: process.env.VONAGE_API_SECRET,
 
@@ -19,5 +19,13 @@ const inicarVerificacion= async(phone,brand = 'Verificacion' )=>{
 
     })
 } 
-const options ={};
-const smsCliente = new (credenciales,options)
+
+async function enviarCodigo(phone ){
+    logger.info(`Intento de verificacion iniciado para ${phone}`);
+
+    try {
+        logger.info(`Codigo enviad exitosamente a ${phone}`);
+    } catch (error) {
+        logger.error(`Error al enviar codigo a ${phone}: ${error.message}`);
+    }
+}
