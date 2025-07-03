@@ -21,7 +21,7 @@ const VerificationCode = new mongoose.Schema({
         enum: ['pendiente', 'verificado', 'expirado', 'fallido', 'bloqueado'],
         default: 'pendiente'
     },
-    createAt:{
+    createdAt:{
         type:Date, 
        required: true,
        default: Date.now
