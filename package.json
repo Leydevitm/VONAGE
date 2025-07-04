@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Leydevitm/VONAGE#readme",
   "dependencies": {
+    "@vonage/server-sdk": "^3.22.0",
     "@vonage/sms": "^1.18.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
