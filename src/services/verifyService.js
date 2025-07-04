@@ -20,8 +20,8 @@ async function verifyCode(phone, code) {
     }
 
     for (const reg of registros) {
-        if(await bcrypt.compare(generarCodigo, reg.code)){
-            reg.estado = 'verificado';
+        if(await bcrypt.compare(code, reg.code)){
+            reg.status = 'verificado';
             reg.verifiedAt= new Date();
             await reg.save()
 
