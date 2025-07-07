@@ -8,7 +8,7 @@ const transport = new winston.transports.DailyRotateFile({
   filename: path.join(__dirname, '../../logs/app-%DATE%.log'),
   datePattern: 'YYYY-MM-DD',
   zippedArchive:false,
-  maxSize:'20m',
+  maxSize:'5m',
   maxFiles: '7d'
 });
 
