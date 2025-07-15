@@ -1,6 +1,7 @@
 const express = require('express');
 const { createServer } = require('http');
 const { dbConnection } = require('./database/config');
+const authMiddleware = require( './middlewares/basicAuth.js');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -33,6 +34,7 @@ class Server {
 
     middlewares() {
         this.app.use(express.json());
+        this.app.use(authMiddleware);
     }
 
     routes() {
