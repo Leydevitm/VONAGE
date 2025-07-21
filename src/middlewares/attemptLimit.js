@@ -1,67 +1,61 @@
-
-const { error } = require('winston');
 const blockedPhone = require('../models/blockedPhone');
-const logger =require('../utils/logger');
+const logger = require('../utils/logger');
+const sanitizePhone = require('../utils/phoneSanitizer'); 
 
+const attemptLimit = async (req, res, next) => {
+    const { phone } = req.body;
 
-const attemptLimit = async (req,res,next)=>{
-    const {phone} = req.body;
+    if (!phone) {
+        return res.status(400).json({ error: 'Número telefónico requerido' });
+    }
 
-    if(!phone) return res.status(400).json({ error:'Numero telefonico requerido'});
-       
-    const block = await blockedPhone.findOne({phone});
+    const sanitizedPhone = sanitizePhone(phone);
 
-    if(block){
-        const  unlocked_atStr = block. unlocked_at.toLocaleTimeString();
+    if (!sanitizedPhone) {
+        return res.status(403).json({ 
+            error: 'Número telefónico inválido. Debe tener formato +521234567890' 
+        });
+    }
+
+    const block = await blockedPhone.findOne({ phone: sanitizedPhone });
+
+    if (block) {
+        const unlocked_atStr = block.unlocked_at.toLocaleTimeString();
         let razon = 'bloqueo por actividad sospechosa';
 
         switch (req.method) {
             case 'POST':
-                if(req.originalUrl.includes('/enviar-codigo')){
-                    razon = 'envio excesivo de codigos';
-                }else if(req.originalUrl.includes('/verificar')){
-                    razon= 'verificacion fallida repetida';
-                }else{
-                    razon = 'Solicitudes POST excesivas';
+                if (req.originalUrl.includes('/start')) {
+                    razon = 'envío excesivo de códigos';
+                } else if (req.originalUrl.includes('/check')) {
+                    razon = 'verificación fallida repetida';
+                } else {
+                    razon = 'solicitudes POST excesivas';
                 }
-                
                 break;
             case 'GET':
-                razon= 'Acceso get bloqueado ';
+                razon = 'acceso GET bloqueado';
                 break;
-            case 'PUT': 
-             razon = 'modificaciones bloqueadas';
-             break;
-            case 'DELETE': 
-            razon = 'funcion bloqueada';
-            break;
+            case 'PUT':
+                razon = 'modificaciones bloqueadas';
+                break;
+            case 'DELETE':
+                razon = 'función bloqueada';
+                break;
         }
 
-        logger.warn(`${phone} bloqueado al intentar ${req.method} -> ${req.originalUrl} | razon: ${razon}`);
+        logger.warn(`${sanitizedPhone} bloqueado al intentar ${req.method} -> ${req.originalUrl} | razón: ${razon}`);
 
         return res.status(429).json({
-              error: `Demaciados intentosfallidos. Vuelve despues de ${ unlocked_atStr}`,
-            motivo: razon, 
-            // unlocked_at: block.unlocked_at.toLocaleTimeString()
+            error: `Demasiados intentos fallidos. Vuelve después de ${unlocked_atStr}`,
+            motivo: razon
         });
     }
-        next()
 
-    }
+  
+    req.sanitizedPhone = sanitizedPhone;
 
-//         if(block){
-//             logger.warn(`Bloqueado ${phone} hasta ${block.unlocked_at}`);
-//             return res.status(429).json({
-//                 error: `Demaciados intentosfallidos. Vuelve despues de ${block.unlocked_at.toLocaleTimeString()}`
+    next();
+};
 
-//             });
-
-//         }
-//         next();
-
-
-    
-    
-// }
-
-module.exports= attemptLimit;
+module.exports = attemptLimit;
