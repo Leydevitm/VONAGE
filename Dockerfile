@@ -1,19 +1,24 @@
+# Imagen con Node JS
+FROM node:22.16.0-alpine
 
-FROM node:20-alpine
+# Recibe la variable PORT desde docker-compose
+ARG PORT
+ENV PORT=${PORT}
 
+# Directorio de trabajo dentro del contenedor
+WORKDIR /app
 
-WORKDIR /index
-
-
+# Archivos de definición de dependencias
 COPY package*.json ./
 
+# Instala las dependencias (solo producción)
+RUN npm install --omit=dev
 
-RUN npm install
-
-
+# Copia el resto de los archivos
 COPY . .
 
+# Expón el puerto configurado dinámicamente
+EXPOSE ${PORT}
 
-
-
-CMD ["npm", "start"]
+# Comando de inicio
+CMD ["node", "index.js"]
