@@ -1,11 +1,15 @@
 const express = require('express');
 const { createServer } = require('http');
 const { dbConnection } = require('./database/config');
-const authMiddleware = require( './middlewares/basicAuth.js');
+
 const dotenv = require('dotenv');
+const cors = require('cors');
+
 dotenv.config();
 
 const smsRoutes = require('./routes/sms'); 
+const tokenRoutes = require('./routes/token');  
+const hmacRoutes = require('./routes/hmac');
 
 class Server {
 
@@ -15,8 +19,10 @@ class Server {
         this.server = createServer(this.app);
 
         this.paths = {
-            sms: '/api/sms'
-        };
+            sms: '/api/sms',
+            token: '/api/token',
+            hmac: '/api/hmac'
+        };    
 
         // Conexion a la base de datos
         this.conectarDB();
@@ -33,12 +39,15 @@ class Server {
     }
 
     middlewares() {
+        this.app.use(cors());
         this.app.use(express.json());
-        this.app.use(authMiddleware);
+        // this.app.use(authMiddleware);
     }
 
     routes() {
-         this.app.use(this.paths.sms, smsRoutes);
+        this.app.use(this.paths.sms, smsRoutes);
+        this.app.use(this.paths.token, tokenRoutes);
+        this.app.use(this.paths.hmac, hmacRoutes);
     }
 
     listen() {

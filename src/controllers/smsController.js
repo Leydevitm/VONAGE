@@ -1,14 +1,19 @@
 const { startVerification, checkVerification } = require('../services/verifyService');
 
 const startVerificationController = async (req, res) => {
-    const { sanitizedPhone } = req;
+    const sanitizedPhone = req.sanitizedPhone;
 
-    try {
-        const resultado = await startVerification(sanitizedPhone);
-        res.status(resultado.ok ? 200 : 400).json(resultado);
-    } catch (error) {
-        res.status(500).json({ error: 'Error interno al iniciar verificación' });
-    }
+
+  try {
+    const resultado = await startVerification(sanitizedPhone);
+    return res.status(resultado.ok ? 200 : 400).json(resultado);
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      message: 'Error interno al iniciar verificación',
+      error: error.message
+    });
+  }
 };
 
 const checkVerificationController = async (req, res) => {

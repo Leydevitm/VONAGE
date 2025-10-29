@@ -1,5 +1,4 @@
 
-//import basicAuth from 'basic-auth';
 const basicAuth = require('basic-auth');
 
 
