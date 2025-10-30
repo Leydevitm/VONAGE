@@ -2,14 +2,12 @@ const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-en
 
 class RecaptchaService {
     constructor() {
-        // El cliente se inicializa automáticamente con las credenciales
-        // del environment variable GOOGLE_APPLICATION_CREDENTIALS
+       
         this.client = new RecaptchaEnterpriseServiceClient();
     }
 
     async createAssessment({ token, expectedAction = null }) {
         try {
-            // Validación para desarrollo
             if (process.env.NODE_ENV === 'development' || token === 'TESTING_TOKEN') {
                 console.log('reCAPTCHA en modo desarrollo');
                 return {
@@ -24,11 +22,8 @@ class RecaptchaService {
             if (!projectId) {
                 throw new Error('RECAPTCHA_PROJECT_ID no configurado');
             }
-
-            // Construir el nombre del proyecto correctamente
             const projectName = this.client.projectPath(projectId);
 
-            // Crear la solicitud de assessment
             const request = {
                 parent: projectName,
                 assessment: {
@@ -39,7 +34,6 @@ class RecaptchaService {
                 },
             };
 
-            // Si hay una acción esperada, agregarla
             if (expectedAction) {
                 request.assessment.event.expectedAction = expectedAction;
             }
@@ -47,7 +41,6 @@ class RecaptchaService {
             console.log('Creando assessment reCAPTCHA Enterprise...');
             const [response] = await this.client.createAssessment(request);
 
-            // Verificar el resultado
             if (!response.tokenProperties.valid) {
                 return {
                     success: false,
@@ -58,7 +51,6 @@ class RecaptchaService {
                 };
             }
 
-            // Verificar acción si se especificó una esperada
             if (expectedAction && response.tokenProperties.action !== expectedAction) {
                 return {
                     success: false,
@@ -78,7 +70,6 @@ class RecaptchaService {
         } catch (error) {
             console.error(' Error en createAssessment:', error.message);
             
-            // En desarrollo, permitir continuar
             if (process.env.NODE_ENV === 'development') {
                 console.log('Continuando en desarrollo a pesar del error');
                 return {

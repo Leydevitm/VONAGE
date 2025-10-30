@@ -37,7 +37,7 @@ async function sendCode(phone) {
 
         
         const plainCode = generateCode(6);
-        console.log('Código generado:', plainCode);
+        console.log('Código generado..');
         
         const hashedCode = await bcrypt.hash(plainCode, 10);
         console.log('Código hasheado');
@@ -61,7 +61,7 @@ async function sendCode(phone) {
         console.log(' Registro guardado en BD con ID:', saved._id);
 
         // Enviar SMS con el código plano
-        const mensaje = `Your Super Kompras verification code is: ${plainCode}.`;
+        const mensaje = `Vonage:Your Super Kompras verification code is: ${plainCode}.`;
         console.log(' Enviando SMS...');
         
         const smsResult = await sendSMS(sanitizedPhone, mensaje);

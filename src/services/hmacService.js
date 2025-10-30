@@ -15,7 +15,7 @@ function canonicalString(obj) {
     Object.keys(obj)
       .sort()
       .reduce((res, key) => {
-        // Manejar valores undefined/null
+       
         res[key] = obj[key] !== undefined ? obj[key] : null;
         return res;
       }, {})
