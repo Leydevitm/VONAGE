@@ -7,18 +7,18 @@ const hmacMiddleware = require('../middlewares/hmacMiddleware');
 const router = Router();
 
 router.post('/send-code',
+hmacMiddleware,
 verifyJwt,      
-hmacMiddleware, 
-captchaForSMS(), 
+ captchaForSMS(), 
 attemptLimit,
 startVerificationController
 );
 
 router.post('/verify-code',
-verifyJwt,       
-hmacMiddleware,  
-captchaForVerify(), 
-attemptLimit, 
+hmacMiddleware,
+verifyJwt,
+captchaForVerify(),
+attemptLimit,
 checkVerificationController
 );
 

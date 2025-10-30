@@ -1,11 +1,11 @@
-const { startVerification, checkVerification } = require('../services/verifyService');
+const { sendCode,  checkVerifyCode  } = require('../helpers/smsVerificationHelpers');
 
 const startVerificationController = async (req, res) => {
     const sanitizedPhone = req.sanitizedPhone;
 
 
   try {
-    const resultado = await startVerification(sanitizedPhone);
+    const resultado = await sendCode(sanitizedPhone);
     return res.status(resultado.ok ? 200 : 400).json(resultado);
   } catch (error) {
     return res.status(500).json({
@@ -25,7 +25,7 @@ const checkVerificationController = async (req, res) => {
     }
 
     try {
-        const resultado = await checkVerification(sanitizedPhone, code);
+        const resultado = await checkVerifyCode(sanitizedPhone, code);
         res.status(resultado.ok ? 200 : 400).json(resultado);
     } catch (error) {
         res.status(500).json({ error: 'Error interno al verificar código' });
